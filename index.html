@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>گروه مشاورین املاک فراز - تبدیل کد جام</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.9.0/proj4.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Vazirmatn', sans-serif; /* Persian font */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background-color: #f0f2f5; /* Light gray background */
+            color: #333; /* Dark text color */
+            padding: 1rem;
+        }
+        .container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 0.75rem; /* Rounded corners */
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); /* Soft shadow */
+            width: 100%;
+            max-width: 500px; /* Max width for the container */
+            text-align: right; /* Right-align text for Persian */
+        }
+        .title {
+            font-size: 1.75rem; /* Larger title */
+            font-weight: 700;
+            color: #1a202c; /* Darker title color */
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        .input-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #4a5568; /* Medium gray label color */
+        }
+        .input-field {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #cbd5e0; /* Lighter border */
+            border-radius: 0.5rem; /* Rounded input field */
+            margin-bottom: 1.5rem;
+            text-align: left; /* Align input text to the left for numbers */
+            direction: ltr; /* Ensure number input is LTR */
+            font-family: 'Inter', sans-serif; /* Use Inter for numbers */
+        }
+        .input-field:focus {
+            outline: none;
+            border-color: #4299e1; /* Blue border on focus */
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5); /* Focus ring */
+        }
+        .submit-button {
+            width: 100%;
+            padding: 0.875rem 1.5rem;
+            background-color: #4299e1; /* Blue button */
+            color: white;
+            font-weight: 600;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .submit-button:hover {
+            background-color: #3182ce; /* Darker blue on hover */
+        }
+        .result-section {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background-color: #f7fafc; /* Very light gray for result section */
+            border-radius: 0.5rem;
+            border: 1px solid #e2e8f0; /* Light border for result section */
+        }
+        .result-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #2d3748; /* Dark gray result title */
+        }
+        .result-text {
+            margin-bottom: 0.75rem;
+            color: #4a5568;
+            word-break: break-all; /* Break long links/coordinates */
+        }
+        .result-text strong {
+            color: #2c5282; /* Darker blue for strong text */
+        }
+        .message-area {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            text-align: center;
+        }
+        .message-area.success {
+            background-color: #c6f6d5; /* Light green for success */
+            color: #2f855a; /* Dark green text */
+            border: 1px solid #9ae6b4;
+        }
+        .message-area.error {
+            background-color: #fed7d7; /* Light red for error */
+            color: #c53030; /* Dark red text */
+            border: 1px solid #feb2b2;
+        }
+        .footer-text {
+            margin-top: 2rem;
+            text-align: center;
+            font-size: 0.875rem;
+            color: #718096; /* Gray footer text */
+        }
+        #coordinatesDisplay {
+            display: block;
+            font-family: 'monospace', 'Inter', sans-serif; /* Monospace font for coordinates */
+            font-size: 1.25rem; /* Larger font for coordinates */
+            font-weight: bold;
+            color: #2c5282; /* Dark blue for coordinates */
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+            transition: background-color 0.2s ease;
+        }
+        #coordinatesDisplay:hover {
+            background-color: #ebf8ff; /* Light blue background on hover */
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">گروه مشاورین املاک فراز</h1>
+        <p class="text-center text-gray-600 mb-6">ابزار تبدیل کد جام به مختصات جغرافیایی</p>
+
+        <div>
+            <label for="jamCode" class="input-label">کد جام را وارد کنید:</label>
+            <input type="text" id="jamCode" class="input-field" placeholder="مثال: 123456789012345">
+        </div>
+
+        <button id="convertButton" class="submit-button">تبدیل به مختصات</button>
+
+        <div id="resultArea" class="result-section" style="display: none;">
+            <h2 class="result-title">نتایج تبدیل:</h2>
+
+            <div class="result-text text-center">
+                <span id="coordinatesDisplay" title="برای کپی کلیک کنید">
+                    {/* Coordinates will be injected here by JS */}
+                </span>
+                <p class="text-xs text-gray-600 mt-1">(جهت کپی روی عدد کلیک کنید)</p>
+            </div>
+
+            <div class="result-text mt-4">
+                <strong>لینک نقشه گوگل:</strong>
+                <a id="mapLink" href="#" target="_blank" class="text-blue-600 hover:text-blue-800 underline">مشاهده در نقشه</a>
+            </div>
+        </div>
+
+        <div id="messageArea" class="message-area" style="display: none;"></div>
+    </div>
+    <p class="footer-text">© <span id="currentYear"></span> گروه مشاورین املاک فراز. تمامی حقوق محفوظ است.</p>
+
+    <script>
+        // Set current year in footer
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+        // Proj4js definitions
+        // WGS84 definition (standard lat/lon)
+        proj4.defs("WGS84", "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs");
+
+        // DOM Elements
+        const jamCodeInput = document.getElementById('jamCode');
+        const convertButton = document.getElementById('convertButton');
+        const resultArea = document.getElementById('resultArea');
+        const coordinatesDisplay = document.getElementById('coordinatesDisplay'); // For combined coordinates
+        const mapLink = document.getElementById('mapLink');
+        const messageArea = document.getElementById('messageArea');
+
+        // Event listener for the convert button
+        convertButton.addEventListener('click', () => {
+            const jamCode = jamCodeInput.value.trim();
+            showMessage('', 'success'); // Clear previous messages
+            resultArea.style.display = 'none'; // Hide results initially
+
+            // Validate input: must be a number and at least 15 digits
+            if (!jamCode || !/^\d+$/.test(jamCode) || jamCode.length < 15) {
+                showMessage('کد جام باید حداقل ۱۵ رقم عددی باشد.', 'error');
+                return;
+            }
+
+            // Extract parts of the Jam Code (first 15 digits)
+            const code = jamCode.substring(0, 15);
+            const easting = parseInt(code.substring(0, 6));
+            const northing = parseInt(code.substring(6, 13));
+            const zone = parseInt(code.substring(13, 15));
+
+            // Validate parsed values (basic checks)
+            if (isNaN(easting) || isNaN(northing) || isNaN(zone) || zone < 1 || zone > 60) {
+                showMessage('کد جام نامعتبر است. مقادیر استخراج شده صحیح نیستند.', 'error');
+                return;
+            }
+
+            // Define UTM projection for the specific zone
+            // Assuming Northern Hemisphere as per requirements for Iran
+            const utmProjection = `+proj=utm +zone=${zone} +ellps=WGS84 +datum=WGS84 +units=m +no_defs +north`;
+            const utmProjName = `UTM${zone}N`;
+            proj4.defs(utmProjName, utmProjection);
+
+            try {
+                // Perform the conversion from UTM to WGS84 (lat/lon)
+                // proj4 returns [longitude, latitude]
+                const coordsWGS84 = proj4(utmProjName, "WGS84", [easting, northing]);
+                const longitude = coordsWGS84[0];
+                const latitude = coordsWGS84[1];
+
+                // Display the results
+                // Format: Latitude, Longitude
+                coordinatesDisplay.textContent = `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
+
+                // Create Google Maps link using the user-specified domain structure and new number
+                // Example: https://www.google.com/maps/place/28%C2%B020'31.1%22N+51%C2%B031'18.4%22E/LAT,LON
+                mapLink.href = `https://www.google.com/maps/place/28%C2%B020'31.1%22N+51%C2%B031'18.4%22E/${latitude.toFixed(6)},${longitude.toFixed(6)}`;
+                
+                resultArea.style.display = 'block';
+                showMessage('تبدیل مختصات با موفقیت انجام شد.', 'success');
+
+            } catch (error) {
+                console.error("Proj4js conversion error:", error);
+                showMessage(`خطا در تبدیل مختصات: ${error.message}. لطفاً از صحت کد جام و منطقه UTM اطمینان حاصل کنید.`, 'error');
+            }
+        });
+
+        // Event listener for clicking on the coordinates to copy
+        coordinatesDisplay.addEventListener('click', () => {
+            const coordsToCopy = coordinatesDisplay.textContent;
+            if (!coordsToCopy) {
+                // This case should ideally not happen if coordinates are displayed
+                showMessage('مختصاتی برای کپی وجود ندارد.', 'error');
+                return;
+            }
+
+            navigator.clipboard.writeText(coordsToCopy).then(() => {
+                showMessage('مختصات کپی شد!', 'success', 2000); // Show success for 2 seconds
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+                showMessage('خطا در کپی کردن مختصات. لطفاً به صورت دستی کپی کنید.', 'error');
+            });
+        });
+
+        // Function to display messages
+        function showMessage(message, type, duration = 0) {
+            messageArea.textContent = message;
+            messageArea.className = `message-area ${type}`; // Reset classes and apply new type
+            messageArea.style.display = message ? 'block' : 'none';
+
+            if (duration > 0) {
+                // Store the message that triggered this timeout
+                const messageForTimeout = message;
+                setTimeout(() => {
+                    // Only hide if the current message is still the one we set for this timeout
+                    if (messageArea.textContent === messageForTimeout) {
+                         messageArea.style.display = 'none';
+                    }
+                }, duration);
+            }
+        }
+
+        // Clear input and results on load for a cleaner start
+        jamCodeInput.value = '';
+        resultArea.style.display = 'none';
+        messageArea.style.display = 'none';
+
+    </script>
+</body>
+</html>
