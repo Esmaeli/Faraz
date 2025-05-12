@@ -222,7 +222,7 @@
 
                 // Create Google Maps link using the user-specified domain structure and new number
                 // Example: https://www.google.com/maps/place/28%C2%B020'31.1%22N+51%C2%B031'18.4%22E/LAT,LON
-                mapLink.href = `https://www.google.com/maps/place/28%C2%B020'31.1%22N+51%C2%B031'18.4%22E/${latitude.toFixed(6)},${longitude.toFixed(6)}`;
+                mapLink.href = `https://www.google.com/maps/search/ ${latitude.toFixed(6)}%20%20,%20${longitude.toFixed(6)}/`;
                 
                 resultArea.style.display = 'block';
                 showMessage('تبدیل مختصات با موفقیت انجام شد.', 'success');
